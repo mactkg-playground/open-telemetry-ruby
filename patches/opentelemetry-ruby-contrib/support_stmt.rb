@@ -5,18 +5,13 @@ module OpenTelemetry
     module Mysql2
       module Patches
         module Statement
-          attr_reader :query, :client
-
           def memo_query(sql, client)
-            if !@query.nil?
-              raise StandardError.new("Don't call memo_query twice")
-            end
             @query = sql
             @client = client
           end
 
           def execute(*args, **kwargs)
-            client.trace(@query) { super(*args, **kwargs) }
+            @client.trace(@query) { super(*args, **kwargs) }
           end
         end
 
